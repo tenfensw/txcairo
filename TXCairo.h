@@ -16,36 +16,28 @@
 
 #define TXCAIRO_VERSION 0.21
 
-SDL_Surface* _txLinUnportableCairoSurfaceFromPNG(const char* pngPath) {
-    if (!pngPath)
-        return nullptr;
-    cairo_surface_t* srf = cairo_image_surface_create_from_png(pngPath);
+SDL_Surface* _txLinUnportableSDLSurfaceFromCairo(cairo_surface_t* srf) {
     if (!srf)
         return nullptr;
     int cw = cairo_image_surface_get_width(srf);
     int ch = cairo_image_surface_get_height(srf);
     SDL_Surface* sdlsurf = SDL_CreateRGBSurface(0, cw, ch, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
-    if (!sdlsurf) {
-        cairo_surface_destroy(srf);
+    if (!sdlsurf)
         return nullptr;
-    }
     cairo_surface_t* cairosurf = cairo_image_surface_create_for_data((unsigned char*)(sdlsurf->pixels), CAIRO_FORMAT_RGB24, sdlsurf->w, sdlsurf->h, sdlsurf->pitch);
     cairo_t* cairoblitter = cairo_create(cairosurf);
     cairo_set_source_surface(cairoblitter, srf, 0, 0);
     cairo_paint(cairoblitter);
     cairo_destroy(cairoblitter);
     cairo_surface_destroy(cairosurf);
-    cairo_surface_destroy(srf);
     return sdlsurf;
 }
 
-bool txBlitPNG(const char* pngIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y = 0) {
+
+bool _txLinUnportableBlitAnySurface(SDL_Surface* actualSurf, HDC dcOut, unsigned x, unsigned y) {
     HDC realOut = dcOut;
-    if (!pngIn)
-        return false;
-    else if (!realOut)
+    if (!realOut)
         realOut = txDC();
-    SDL_Surface* actualSurf = _txLinUnportableCairoSurfaceFromPNG(pngIn);
     if (!actualSurf)
         return false;
     SDL_Texture* actualText = SDL_CreateTextureFromSurface(realOut, actualSurf);
@@ -56,12 +48,34 @@ bool txBlitPNG(const char* pngIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y
     mkRect->y = y;
     mkRect->w = actualSurf->w;
     mkRect->h = actualSurf->h;
-    SDL_FreeSurface(actualSurf);
     SDL_RenderCopy(realOut, actualText, nullptr, mkRect);
     SDL_free(mkRect);
     SDL_RenderPresent(realOut);
     SDL_DestroyTexture(actualText);
     return true;
 }
+
+
+bool txBlitPNG(const char* pngIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y = 0) {
+    if (!pngIn)
+        return false;
+    cairo_surface_t* srf = cairo_image_surface_create_from_png(pngIn);
+    SDL_Surface* actualSurf = _txLinUnportableSDLSurfaceFromCairo(srf);
+    bool result = _txLinUnportableBlitAnySurface(actualSurf, dcOut, x, y);
+    SDL_FreeSurface(actualSurf);
+    cairo_surface_destroy(srf);
+    return result;
+}
+
+bool txBlitBMP(const char* bmpIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y = 0) {
+    if (!bmpIn)
+        return false;
+    SDL_Surface* actualSurf = SDL_LoadBMP(bmpIn);
+    bool result = _txLinUnportableBlitAnySurface(actualSurf, dcOut, x, y);
+    SDL_FreeSurface(actualSurf);
+    return result;
+}
+
+
 
 #endif

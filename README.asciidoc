@@ -64,5 +64,26 @@ bool txBlitPNG(const char* pngIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y
 
 See ``demo.cxx`` for an example and ``build-demo.sh`` for build instructions.
 
+=== BMP support
+
+There is a function for that, too:
+
+[source,c++]
+----
+bool txBlitBMP(const char* bmpIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y = 0)
+----
+
+**Arguments:**
+
+[squares]
+- ``const char* bmpIn`` - full path to the BMP file to be loaded.
+- ``HDC dcOut`` (_optional_) - the surface descriptor pointing to the surface where the picture shall be rendered.
+- ``unsigned x`` (_optional_), ``unsigned y`` (_also optional_) - the coordinates of the top left corner of the picture on the surface.
+
+**Returns**:
+
+``true`` on success, ``false`` on failure.
+
+
 == License
 TXLin License: http://meow.roveramd.com/archives/LICENSE.TXLIN
