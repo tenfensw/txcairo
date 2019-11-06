@@ -1,0 +1,68 @@
+= TXCairo
+
+**TXCairo** is a module adding image loading and blitting support to TXLin. This module is implemented using Cairo (hence the name).
+
+== Installation (on macOS)
+
+Install Cairo via MacPorts:
+
+[source,bash]
+----
+$ sudo port install cairo
+$ sudo port deactivate libiconv -f # this needs to be done ONLY if you've been using the installer
+----
+
+Copy the header into ``/Library/Developer/TXLin/include``:
+
+[source,bash]
+----
+$ sudo cp TXCairo.h /Library/Developer/TXLin/include/
+----
+
+== Installation (on Linux)
+
+Install Cairo:
+
+[source,bash]
+----
+$ sudo apt-get install libcairo2-dev -y
+----
+
+Copy TXCairo.h into ``/usr/include``:
+
+[source,bash]
+----
+$ sudo cp TXCairo.h /usr/include/
+----
+
+
+== Usage
+
+**CURRENTLY, ONLY PNG IMAGES ARE SUPPORTED**
+
+There is one function responsible for loading PNGs and rendering them - ``txBlitPNG``.
+
+Declaration:
+
+[source,c++]
+----
+bool txBlitPNG(const char* pngIn, HDC dcOut = txDC(), unsigned x = 0, unsigned y = 0)
+----
+
+**Arguments:**
+
+[squares]
+- ``const char* pngIn`` - full path to the PNG file to be loaded. Example: ``/Users/tim/Pictures/cats/maru.png``.
+- ``HDC dcOut`` (_optional_) - the surface descriptor pointing to the surface where the picture shall be rendered.
+- ``unsigned x`` (_optional_), ``unsigned y`` (_also optional_) - the coordinates of the top left corner of the picture on the surface.
+
+**Returns**:
+
+``true`` on success, ``false`` on failure.
+
+**Example**:
+
+See ``demo.cxx`` for an example and ``build-demo.sh`` for build instructions.
+
+== License
+TXLin License: http://meow.roveramd.com/archives/LICENSE.TXLIN
