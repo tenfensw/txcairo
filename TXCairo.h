@@ -85,3 +85,4 @@ inline bool txBlitBMP(const char* bmpIn, HDC dcOut = txDC(), unsigned x = 0, uns
     return result;
 }
 
+#endif
